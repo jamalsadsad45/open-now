@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Aqsa Kanwal · Valentine magic</title>
+  <!-- Google Fonts: elegant & romantic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome for heart icons etc -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== RESET & GLOBAL ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #ffd9e8 0%, #f7b7cb 40%, #e0a1d0 80%, #c97bcf 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #3d1b3d;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* floating hearts & sparkles canvas (background) */
+    #floating-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;  /* so clicks go through */
+      z-index: 1;
+    }
+
+    /* main content sits above canvas */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /* glassmorphism cards */
+    .glass-card {
+      background: rgba(255, 240, 250, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 3rem 1.5rem 3rem 1.5rem;
+      box-shadow: 0 20px 40px rgba(201, 76, 131, 0.25), 0 0 30px rgba(255, 200, 235, 0.7);
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      transition: transform 0.3s ease;
+    }
+
+    /* headings & text */
+    h1, h2, h3 {
+      font-family: 'Dancing Script', cursive;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px #ff9ed7, 0 0 30px #ff4da6;
+    }
+
+    .glow-text {
+      font-size: 3.2rem;
+      color: #9b1d5c;
+      animation: softGlow 3s infinite alternate;
+    }
+
+    @keyframes softGlow {
+      0% { text-shadow: 0 0 10px #ffb3d9, 0 0 20px #ff80bf, 0 0 30px #ff4da6; }
+      100% { text-shadow: 0 0 20px #ffe6f3, 0 0 40px #ffb3d9, 0 0 60px #ff80bf; }
+    }
+
+    .typing-sub {
+      font-size: 1.7rem;
+      color: #641e4a;
+      font-weight: 400;
+      min-height: 3.5rem;
+      margin: 1.5rem 0 1rem;
+      border-right: 2px solid #ff80bf;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      max-width: fit-content;
+    }
+
+    /* buttons & interactive */
+    .arrow-down {
+      font-size: 3rem;
+      color: #c43b6e;
+      animation: bounce 2s infinite, glowPulse 2s infinite;
+      cursor: pointer;
+      transition: 0.3s;
+      filter: drop-shadow(0 0 15px #ffa6c9);
+      margin-top: 2rem;
+    }
+
+    .arrow-down:hover {
+      transform: scale(1.2);
+      color: #ff1a75;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(15px); }
+    }
+
+    @keyframes glowPulse {
+      0% { filter: drop-shadow(0 0 10px #f9b5d0); }
+      50% { filter: drop-shadow(0 0 30px #ff7eb3); }
+      100% { filter: drop-shadow(0 0 10px #f9b5d0); }
+    }
+
+    .heart-btn {
+      background: none;
+      border: none;
+      font-size: 3rem;
+      color: #ff3377;
+      cursor: pointer;
+      filter: drop-shadow(0 0 20px #ffaccd);
+      transition: 0.3s;
+      margin: 1.2rem;
+    }
+
+    .heart-btn:hover {
+      transform: scale(1.15);
+      color: #ff0066;
+      filter: drop-shadow(0 0 35px #ff66a1);
+    }
+
+    .big-surprise-btn {
+      background: rgba(255, 222, 240, 0.7);
+      backdrop-filter: blur(8px);
+      border: 2px solid white;
+      border-radius: 60px;
+      padding: 1.3rem 3rem;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #a52d6d;
+      box-shadow: 0 10px 30px #ff87b9;
+      margin: 2rem 0;
+      transition: 0.3s;
+      cursor: pointer;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    .big-surprise-btn:hover {
+      background: #ffc1e0;
+      box-shadow: 0 0 50px #fa6eb0;
+      transform: translateY(-8px);
+    }
+
+    /* photo placeholder */
+    .photo-frame {
+      width: 180px;
+      height: 180px;
+      border-radius: 40% 60% 40% 60% / 60% 40% 60% 40%;
+      background: rgba(255, 215, 240, 0.6);
+      border: 6px solid white;
+      margin: 1.5rem auto;
+      box-shadow: 0 20px 35px #ec7eb5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #c43b6e;
+      font-weight: 600;
+      transition: 0.4s;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23ffbfd7"><circle cx="50" cy="50" r="40"/><circle cx="30" cy="35" r="8" fill="%23ff80aa"/><circle cx="70" cy="35" r="8" fill="%23ff80aa"/><path d="M30 65 Q50 80,70 65" stroke="%23ff3388" stroke-width="5" fill="none"/></svg>');
+      background-size: cover;
+    }
+
+    /* section visibility & transitions */
+    .section {
+      transition: opacity 0.8s ease, transform 0.6s ease;
+      opacity: 0;
+      transform: scale(0.9);
+      pointer-events: none;
+      display: none;
+    }
+
+    .section.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: all;
+    }
+
+    /* fade in up effect */
+    .fade-up {
+      animation: fadeUp 1s forwards;
+    }
+
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* hidden helper */
+    .hidden {
+      display: none !important;
+    }
+
+    /* firework / sparkle canvas (fixed) */
+    #fireworks-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+    }
+
+    /* responsive */
+    @media (max-width: 550px) {
+      .glow-text { font-size: 2.5rem; }
+      .typing-sub { font-size: 1.2rem; white-space: normal; border-right: none; }
+      .glass-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- floating hearts & sparkles background (particles) -->
+  <canvas id="floating-canvas"></canvas>
+  <!-- extra canvas for fireworks / final explosion -->
+  <canvas id="fireworks-canvas"></canvas>
+
+  <!-- main container with sections -->
+  <div class="container" id="app">
+
+    <!-- SECTION 1: first screen -->
+    <div id="section1" class="section active">
+      <div class="glass-card fade-up">
+        <h1 class="glow-text">Happy Valentine's Day Aqsa Kanwal ❤️</h1>
+        <p id="typing1" class="typing-sub"></p>
+        <div class="arrow-down" id="arrowContinue">
+          <i class="fas fa-chevron-circle-down"></i>
+          <span style="font-size: 1.2rem; display: block;">Click to Continue</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: cute message + open heart -->
+    <div id="section2" class="section">
+      <div class="glass-card" style="text-align: center;">
+        <p style="font-size: 1.9rem; font-weight: 400; line-height: 1.4; color: #4f1d3a;">
+          “Even when you are busy at work,<br> My heart waits only for you.<br> I am missing you every second.<br> Happy Valentine's Day my love ❤️”
+        </p>
+        <button class="heart-btn" id="openHeartBtn"><i class="fas fa-heart"></i> Open My Heart <i class="fas fa-heart"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: photo frame & typing text -->
+    <div id="section3" class="section">
+      <div class="glass-card" style="text-align: center;">
+        <div class="photo-frame" id="photoFrame">
+          <!-- our picture will go here (placeholder) -->
+          <span style="background: #ffc0e0b3; padding: 0.4rem 1rem; border-radius: 30px;"> Aqsa & me 🥰</span>
+        </div>
+        <p id="typing3" class="typing-sub" style="white-space: normal; border: none; min-height: 5rem; font-size: 1.9rem;"></p>
+      </div>
+    </div>
+
+    <!-- SECTION 4: final surprise button & then will you be mine -->
+    <div id="section4" class="section">
+      <div class="glass-card" style="text-align: center;">
+        <button class="big-surprise-btn" id="lastSurpriseBtn">✨ One Last Surprise ✨</button>
+        <div id="finalProposal" style="margin-top: 2rem; display: none;">
+          <h2 style="font-size: 4rem; animation: softGlow 2s infinite;">Will You Always Be Mine? 💍❤️</h2>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- hidden audio for autoplay (soft romantic music) -->
+  <audio id="bgMusic" loop autoplay>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+    <!-- fallback: romantic instrumental. SoundHelix is royalty-free. -->
+  </audio>
+  <script>
+    (function() {
+      "use strict";
+
+      // ---------- background music with soft start ----------
+      const music = document.getElementById('bgMusic');
+      music.volume = 0.3; // soft
+
+      // attempt autoplay (most browsers need user interaction)
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // autoplay blocked? will start after first click anywhere (arrow)
+          document.addEventListener('click', function once() {
+            music.play();
+            document.removeEventListener('click', once);
+          }, { once: true });
+        });
+      }
+
+      // ---------- SECTIONS & TRANSITIONS ----------
+      const sections = {
+        1: document.getElementById('section1'),
+        2: document.getElementById('section2'),
+        3: document.getElementById('section3'),
+        4: document.getElementById('section4')
+      };
+
+      function showSection(id) {
+        Object.values(sections).forEach(sec => sec.classList.remove('active'));
+        sections[id].classList.add('active');
+        // sparkle effect via small style (magical transition)
+        document.body.style.transition = 'background 0.8s';
+        document.body.style.background = 'linear-gradient(145deg, #ffe2f0 0%, #f7c1d9 40%, #e0b0d5 80%, #d499e0 100%)';
+        setTimeout(() => document.body.style.background = '', 500);
+      }
+
+      // typing effects (simple)
+      function typeText(element, text, speed = 60, callback) {
+        let i = 0;
+        element.textContent = '';
+        function type() {
+          if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          } else if (callback) callback();
+        }
+        type();
+      }
+
+      // start section1 typing when page loads
+      const typingEl1 = document.getElementById('typing1');
+      typeText(typingEl1, "You are busy at office… but I'm missing you so much here ❤️", 90);
+
+      // arrow click -> go to section2 with sparkle
+      document.getElementById('arrowContinue').addEventListener('click', () => {
+        showSection(2);
+        // tiny heart explosion simulation (background sparkle)
+        triggerMiniSparkle();
+      });
+
+      // open heart button -> section3 + heart explosion + typing
+      document.getElementById('openHeartBtn').addEventListener('click', function(e) {
+        showSection(3);
+        // heart explosion effect (simulated with canvas, but we also animate heartbtn)
+        heartExplosionEffect();
+
+        // start typing text in section3
+        const typingEl3 = document.getElementById('typing3');
+        typeText(typingEl3, "You are my peace. You are my happiness. You are my forever. Aqsa, I love you endlessly ❤️", 70);
+      });
+
+      // last surprise button
+      document.getElementById('lastSurpriseBtn').addEventListener('click', function() {
+        // show fireworks canvas and animate
+        const fCanvas = document.getElementById('fireworks-canvas');
+        fCanvas.style.display = 'block';
+        startFireworks();
+
+        // show final text
+        const finalDiv = document.getElementById('finalProposal');
+        finalDiv.style.display = 'block';
+        finalDiv.classList.add('fade-up');
+
+        // hide the button (optional)
+        this.style.display = 'none';
+      });
+
+      // ---------- canvas background (floating hearts, stars, sparkles) ----------
+      const canvas = document.getElementById('floating-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+
+      function initParticles() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const numParticles = 60;
+        particles = [];
+        for (let i = 0; i < numParticles; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 20 + 8,  // hearts bigger
+            speedY: Math.random() * 0.5 + 0.2,
+            speedX: (Math.random() - 0.5) * 0.3,
+            opacity: Math.random() * 0.5 + 0.3,
+            type: Math.random() > 0.6 ? 'star' : 'heart',
+            color: `rgba(255, ${Math.floor(160 + Math.random()*80)}, 220,`,
+          });
+        }
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        for (let p of particles) {
+          ctx.globalAlpha = p.opacity * 0.8;
+          if (p.type === 'heart') {
+            ctx.font = `${p.size}px 'Font Awesome 6 Free'`;
+            ctx.fillStyle = p.color + '0.9)'; // soft pink
+            ctx.fillText('❤️', p.x, p.y);
+          } else {
+            // star / sparkle
+            ctx.font = `${p.size-5}px 'Font Awesome 6 Free'`;
+            ctx.fillStyle = 'rgba(255, 255, 180, 0.9)';
+            ctx.fillText('✨', p.x, p.y);
+          }
+
+          // move
+          p.y += p.speedY;
+          p.x += p.speedX;
+          if (p.y > height + 30) {
+            p.y = -30;
+            p.x = Math.random() * width;
+          }
+          if (p.x > width + 30) p.x = -30;
+          if (p.x < -30) p.x = width + 30;
+        }
+        requestAnimationFrame(drawParticles);
+      }
+
+      window.addEventListener('resize', () => {
+        initParticles();
+      });
+
+      initParticles();
+      drawParticles();
+
+      // ---------- helper sparkle effect (mini explosion for transitions) ----------
+      function triggerMiniSparkle() {
+        // just a little style flash
+        const glass = document.querySelector('.glass-card');
+        glass.style.transition = 'box-shadow 0.3s';
+        glass.style.boxShadow = '0 0 100px #ffbbee, 0 0 200px #ff66b2';
+        setTimeout(() => glass.style.boxShadow = '', 300);
+      }
+
+      // heart explosion effect (on click open my heart)
+      function heartExplosionEffect() {
+        for (let i=0; i<12; i++) {
+          setTimeout(() => {
+            // add a temporary floating heart from center
+            const explosionHeart = document.createElement('div');
+            explosionHeart.innerHTML = '❤️';
+            explosionHeart.style.position = 'fixed';
+            explosionHeart.style.left = '50%';
+            explosionHeart.style.top = '50%';
+            explosionHeart.style.fontSize = '3rem';
+            explosionHeart.style.zIndex = '999';
+            explosionHeart.style.pointerEvents = 'none';
+            explosionHeart.style.transition = 'all 1s ease-out';
+            explosionHeart.style.opacity = '1';
+            document.body.appendChild(explosionHeart);
+            const angle = Math.random() * 2 * Math.PI;
+            const dist = 150 + Math.random()*200;
+            const tox = Math.cos(angle)*dist;
+            const toy = Math.sin(angle)*dist - 50;
+            setTimeout(() => {
+              explosionHeart.style.transform = `translate(${tox}px, ${toy}px) scale(0.2)`;
+              explosionHeart.style.opacity = '0';
+            }, 20);
+            setTimeout(() => explosionHeart.remove(), 1100);
+          }, i * 60);
+        }
+      }
+
+      // ---------- fireworks (final surprise) ----------
+      const fCanvas = document.getElementById('fireworks-canvas');
+      const fCtx = fCanvas.getContext('2d');
+      let fireworks = [];
+      let particlesFire = [];
+
+      function resizeFireworks() {
+        fCanvas.width = window.innerWidth;
+        fCanvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeFireworks);
+      resizeFireworks();
+
+      function startFireworks() {
+        fireworks = [];
+        particlesFire = [];
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            createFirework();
+          }, i * 200);
+        }
+        // keep updating
+        if (!window.fireworksInterval) {
+          window.fireworksInterval = setInterval(updateFireworks, 30);
+        }
+        // auto stop after 5 sec
+        setTimeout(() => {
+          if (window.fireworksInterval) {
+            clearInterval(window.fireworksInterval);
+            window.fireworksInterval = null;
+            fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+            fCanvas.style.display = 'none';
+          }
+        }, 5000);
+      }
+
+      function createFirework() {
+        let x = Math.random() * fCanvas.width;
+        let y = Math.random() * fCanvas.height * 0.6 + 100;
+        let colors = ['#ff66b2', '#ff3388', '#ffb3d9', '#ffd700', '#ffaaff'];
+        let color = colors[Math.floor(Math.random() * colors.length)];
+        let particlesCount = 40;
+        for (let i = 0; i < particlesCount; i++) {
+          let angle = Math.random() * 2 * Math.PI;
+          let speed = Math.random() * 5 + 2;
+          let vx = Math.cos(angle) * speed;
+          let vy = Math.sin(angle) * speed;
+          particlesFire.push({
+            x, y, vx, vy,
+            life: 1,
+            color: color,
+            size: Math.random() * 6 + 3
+          });
+        }
+      }
+
+      function updateFireworks() {
+        fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+        for (let i = particlesFire.length - 1; i >= 0; i--) {
+          let p = particlesFire[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.1; // gravity
+          p.life -= 0.01;
+          if (p.life <= 0.02 || p.y > fCanvas.height + 50) {
+            particlesFire.splice(i, 1);
+            continue;
+          }
+          fCtx.globalAlpha = p.life;
+          fCtx.beginPath();
+          fCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          fCtx.fillStyle = p.color;
+          fCtx.shadowColor = 'white';
+          fCtx.shadowBlur = 12;
+          fCtx.fill();
+        }
+        // create random extra bursts while active
+        if (Math.random() < 0.2 && particlesFire.length < 200) createFirework();
+        if (window.fireworksInterval) requestAnimationFrame(updateFireworks);
+      }
+
+      // ensure music plays after any first click if needed
+      document.body.addEventListener('click', function enableMusic() {
+        if (music.paused) music.play().catch(()=>{});
+      }, { once: true });
+
+      // Add extra romantic hover animations
+      const btns = document.querySelectorAll('.heart-btn, .big-surprise-btn');
+      btns.forEach(b => {
+        b.addEventListener('mouseenter', () => {
+          b.style.filter = 'drop-shadow(0 0 30px #ff69b4)';
+        });
+      });
+
+      // Prettier: simulate sparkle on photo appear
+      const photoFrame = document.getElementById('photoFrame');
+      // every time section3 becomes active we can add a glow
+      const observer = new MutationObserver(() => {
+        if (sections[3].classList.contains('active')) {
+          photoFrame.style.boxShadow = '0 0 80px #ffbfd7';
+          setTimeout(() => photoFrame.style.boxShadow = '', 900);
+        }
+      });
+      observer.observe(sections[3], { attributes: true, attributeFilter: ['class'] });
+
+      // final proposal auto scroll? we do not force scroll to keep it soft.
+      // but we add a gentle pulse
+    })();
+  </script>
+
+  <!-- small inline for extra hearts (fontawesome used in canvas but we also fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  </body>
+</html>
